@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>헤메코 프로덕트 팀 회식 초대장</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #faf9f6;
+        font-family: "Gaegu", cursive;
+        overflow-x: hidden;
+        user-select: none;
+      }
+
+      .screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #faf9f6;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+        padding: 32px 20px;
+      }
+      .screen.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* ── 1. 초대장 ── */
+      .pc-image {
+        width: min(260px, 60vw);
+        margin-bottom: 24px;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      .invite-text {
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        line-height: 1.7;
+        margin-bottom: 28px;
+      }
+
+      .question {
+        font-size: clamp(18px, 4vw, 24px);
+        color: #666;
+        margin-bottom: 28px;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 28px;
+      }
+
+      .btn {
+        font-family: "Gaegu", cursive;
+        font-size: clamp(20px, 4vw, 26px);
+        font-weight: 700;
+        padding: 10px 40px;
+        border: 2px solid #333;
+        border-radius: 999px;
+        cursor: pointer;
+        background: none;
+        color: #333;
+        transition: opacity 0.15s;
+      }
+      .btn:hover {
+        opacity: 0.5;
+      }
+
+      .btn-no {
+        position: relative;
+        transition: none;
+        z-index: 10;
+      }
+
+      .runaway-msg {
+        position: fixed;
+        font-family: "Gaegu", cursive;
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0;
+        transition: opacity 0.3s;
+        white-space: nowrap;
+      }
+      .runaway-msg.show {
+        opacity: 1;
+      }
+
+      /* ── 2. 수락 ── */
+      .celebrate {
+        font-size: clamp(24px, 5vw, 34px);
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        line-height: 1.7;
+        margin-bottom: 32px;
+      }
+
+      .turtle-image {
+        width: min(240px, 50vw);
+        cursor: pointer;
+        transition: transform 0.2s;
+        animation: turtleWalk 2s ease-in-out infinite;
+      }
+      .turtle-image:hover {
+        transform: scale(1.08);
+      }
+      @keyframes turtleWalk {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(8px);
+        }
+      }
+
+      .turtle-hint {
+        font-size: clamp(18px, 4vw, 24px);
+        color: #666;
+        margin-top: 20px;
+      }
+
+      /* ── 3. 돌림판 ── */
+      #screenSpin {
+        overflow-y: auto;
+      }
+
+      .cutlery-image {
+        width: min(120px, 28vw);
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .spin-title {
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      /* 메뉴 입력 영역 */
+      .menu-input-area {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        max-width: 400px;
+        margin-bottom: 48px;
+      }
+
+      .menu-tag {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-family: "Gaegu", cursive;
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        background: #f0eeea;
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+
+      .menu-tag .remove {
+        cursor: pointer;
+        opacity: 0.4;
+        font-size: 16px;
+        margin-left: 2px;
+        transition: opacity 0.15s;
+      }
+      .menu-tag .remove:hover {
+        opacity: 1;
+      }
+
+      .menu-add-wrap {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .menu-add-input {
+        font-family: "Gaegu", cursive;
+        font-size: 18px;
+        font-weight: 700;
+        background: none;
+        border: none;
+        border-bottom: 1.5px solid #ccc;
+        outline: none;
+        color: #333;
+        width: 80px;
+        padding: 4px 0;
+        text-align: center;
+      }
+      .menu-add-input::placeholder {
+        color: #ccc;
+      }
+
+      .menu-add-btn {
+        font-family: "Gaegu", cursive;
+        font-size: 20px;
+        font-weight: 700;
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        padding: 0 4px;
+        transition: opacity 0.15s;
+      }
+      .menu-add-btn:hover {
+        opacity: 0.5;
+      }
+
+      /* 휠 */
+      .wheel-wrap {
+        position: relative;
+        width: min(300px, 72vw);
+        height: min(300px, 72vw);
+        margin-bottom: 20px;
+      }
+
+      canvas#wheelCanvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      .wheel-pointer {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: min(36px, 8vw);
+        z-index: 10;
+        line-height: 1;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+      }
+
+      .spin-btn {
+        font-family: "Gaegu", cursive;
+        font-size: clamp(22px, 4.5vw, 28px);
+        font-weight: 700;
+        padding: 12px 44px;
+        border: none;
+        background: none;
+        color: #333;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .spin-btn:hover {
+        opacity: 0.5;
+      }
+      .spin-btn:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      .spin-result {
+        font-size: clamp(24px, 5vw, 34px);
+        font-weight: 700;
+        color: #333;
+        margin-top: 12px;
+        min-height: 44px;
+        text-align: center;
+      }
+
+      .spin-again {
+        font-family: "Gaegu", cursive;
+        font-size: 20px;
+        font-weight: 700;
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        margin-top: 8px;
+        margin-bottom: 20px;
+        transition: opacity 0.15s;
+      }
+      .spin-again:hover {
+        opacity: 0.5;
+      }
+
+      /* confetti */
+      .confetti {
+        position: fixed;
+        font-size: 18px;
+        pointer-events: none;
+        z-index: 300;
+        animation: fall linear forwards;
+      }
+      @keyframes fall {
+        0% {
+          opacity: 1;
+          transform: translateY(0) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(110vh) rotate(720deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== 1. 초대장 ===== -->
+    <div class="screen active" id="screenInvite">
+      <img src="pc이모지.png" alt="PC" class="pc-image" />
+      <div class="invite-text">
+        헤메코 프로덕트 팀<br />제 1회 회식에 당신을 초대합니다!
+      </div>
+      <div class="question">수락하시겠습니까?</div>
+      <div class="buttons">
+        <button class="btn" onclick="goAccept()">예</button>
+        <button class="btn btn-no" id="noBtn">아니요</button>
+      </div>
+    </div>
+
+    <div class="runaway-msg" id="runawayMsg"></div>
+
+    <!-- ===== 2. 수락 ===== -->
+    <div
+      class="screen"
+      id="screenAccept"
+      onclick="goSpin()"
+      style="cursor: pointer"
+    >
+      <div class="celebrate">환영합니다 !!<br />그럼 회식에서 만나요 > O <</div>
+      <img src="turtle.png" alt="거북이" class="turtle-image" />
+      <div class="turtle-hint">눌러서 바다로 가기..(사실 메뉴 정하기)</div>
+    </div>
+
+    <!-- ===== 3. 돌림판 ===== -->
+    <div class="screen" id="screenSpin">
+      <img src="cutlery.png" alt="수저" class="cutlery-image" />
+      <div class="spin-title">오늘 뭐 먹지?</div>
+
+      <div class="menu-input-area" id="menuTags"></div>
+
+      <div class="wheel-wrap">
+        <div class="wheel-pointer">▽</div>
+        <canvas id="wheelCanvas"></canvas>
+      </div>
+
+      <button class="spin-btn" id="spinBtn" onclick="spin()">돌리기</button>
+      <div class="spin-result" id="spinResult"></div>
+      <button
+        class="spin-again"
+        id="spinAgain"
+        onclick="resetSpin()"
+        style="display: none"
+      >
+        다시 돌리기
+      </button>
+    </div>
+
+    <script>
+      /* ──────── 화면 전환 ──────── */
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      function goAccept() {
+        showScreen("screenAccept");
+        launchConfetti();
+      }
+
+      function goSpin() {
+        showScreen("screenSpin");
+        renderTags();
+        initWheel();
+      }
+
+      /* ──────── 아니요 도망 ──────── */
+      const noBtn = document.getElementById("noBtn");
+      const runawayMsg = document.getElementById("runawayMsg");
+      let runCount = 0;
+
+      const runawayTexts = [
+        "안 돼요!!",
+        "회식 가야죠!",
+        "도망 못 가~",
+        "꼭 와야 해!",
+        "못 누르지",
+        "포기하세요!",
+        "삼겹살인데...?!",
+        "안 됨",
+        "예 눌러!!",
+        "올 수밖에 없어",
+        "도망은 없다",
+        "불가",
+        "회식은 의무입니다",
+      ];
+
+      function runAway() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        noBtn.style.position = "fixed";
+        noBtn.style.left = Math.random() * (vw - 100) + "px";
+        noBtn.style.top = Math.random() * (vh - 50) + "px";
+
+        runCount++;
+        runawayMsg.textContent =
+          runawayTexts[(runCount - 1) % runawayTexts.length];
+        runawayMsg.style.left = Math.random() * (vw - 160) + 20 + "px";
+        runawayMsg.style.top = Math.random() * (vh - 60) + 20 + "px";
+        runawayMsg.classList.add("show");
+        setTimeout(() => runawayMsg.classList.remove("show"), 700);
+      }
+
+      noBtn.addEventListener("mouseenter", runAway);
+      noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        runAway();
+      });
+
+      /* ──────── confetti ──────── */
+      function launchConfetti() {
+        const shapes = ["·", "•", "●", "○", "◎", "◦", "∘", "◌"];
+        for (let i = 0; i < 80; i++) {
+          setTimeout(() => {
+            const el = document.createElement("div");
+            el.className = "confetti";
+            el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+            el.style.left = Math.random() * 100 + "vw";
+            el.style.top = -30 - Math.random() * 60 + "px";
+            el.style.animationDuration = 2 + Math.random() * 3 + "s";
+            el.style.color = `rgba(0,0,0,${0.12 + Math.random() * 0.4})`;
+            el.style.fontSize = 12 + Math.random() * 20 + "px";
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 5500);
+          }, i * 35);
+        }
+      }
+
+      /* ──────── 메뉴 입력 ──────── */
+      let menus = ["삼겹살", "치킨", "양꼬치", "숙성회"];
+
+      function renderTags() {
+        const wrap = document.getElementById("menuTags");
+        wrap.innerHTML = "";
+
+        menus.forEach((m, i) => {
+          const tag = document.createElement("div");
+          tag.className = "menu-tag";
+          tag.innerHTML = `${m}<span class="remove" onclick="removeMenu(${i})">✕</span>`;
+          wrap.appendChild(tag);
+        });
+
+        // 추가 입력
+        const addWrap = document.createElement("div");
+        addWrap.className = "menu-add-wrap";
+        addWrap.innerHTML = `<input class="menu-add-input" id="newMenuItem" placeholder="추가" maxlength="10"><button class="menu-add-btn" onclick="addMenu()">+</button>`;
+        wrap.appendChild(addWrap);
+
+        // 엔터로도 추가
+        setTimeout(() => {
+          const input = document.getElementById("newMenuItem");
+          if (input)
+            input.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") addMenu();
+            });
+        }, 0);
+      }
+
+      function addMenu() {
+        const input = document.getElementById("newMenuItem");
+        const val = input.value.trim();
+        if (!val || menus.length >= 10) return;
+        menus.push(val);
+        renderTags();
+        initWheel();
+      }
+
+      function removeMenu(idx) {
+        if (menus.length <= 2) return;
+        menus.splice(idx, 1);
+        renderTags();
+        initWheel();
+      }
+
+      /* ──────── 돌림판 ──────── */
+      let canvas, ctx, wheelSize;
+      let currentAngle = 0;
+      let spinning = false;
+
+      function initWheel() {
+        canvas = document.getElementById("wheelCanvas");
+        const wrap = canvas.parentElement;
+        wheelSize = wrap.clientWidth;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = wheelSize * dpr;
+        canvas.height = wheelSize * dpr;
+        ctx = canvas.getContext("2d");
+        ctx.scale(dpr, dpr);
+        currentAngle = 0;
+        drawWheel(0);
+      }
+
+      function drawWheel(rotation) {
+        if (!ctx) return;
+        const sliceCount = menus.length;
+        const arc = (Math.PI * 2) / sliceCount;
+        const cx = wheelSize / 2;
+        const cy = wheelSize / 2;
+        const r = wheelSize / 2 - 4;
+
+        ctx.clearRect(0, 0, wheelSize, wheelSize);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rotation);
+
+        for (let i = 0; i < sliceCount; i++) {
+          const startA = arc * i;
+          const endA = arc * (i + 1);
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, r, startA, endA);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? "#faf9f6" : "#f0eeea";
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(startA) * r, Math.sin(startA) * r);
+          ctx.strokeStyle = "#333";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.save();
+          ctx.rotate(startA + arc / 2);
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = "#333";
+          const fontSize = Math.round(
+            wheelSize * (sliceCount <= 6 ? 0.065 : 0.05),
+          );
+          ctx.font = `700 ${fontSize}px 'Gaegu', cursive`;
+          ctx.fillText(menus[i], r * 0.58, 0);
+          ctx.restore();
+        }
+
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#333";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function spin() {
+        if (spinning || menus.length < 2) return;
+        spinning = true;
+        document.getElementById("spinBtn").disabled = true;
+        document.getElementById("spinResult").textContent = "";
+        document.getElementById("spinAgain").style.display = "none";
+
+        const extraTurns = (5 + Math.random() * 3) * Math.PI * 2;
+        const targetAngle = currentAngle + extraTurns;
+        const duration = 4000;
+        const startTime = performance.now();
+        const startAngle = currentAngle;
+
+        function animate(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          currentAngle = startAngle + (targetAngle - startAngle) * ease;
+          drawWheel(currentAngle);
+
+          if (t < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            currentAngle = targetAngle;
+            spinning = false;
+            showResult();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function showResult() {
+        const sliceCount = menus.length;
+        const arc = (Math.PI * 2) / sliceCount;
+        // 포인터는 12시 방향(-π/2), 휠 회전 보정
+        let pointerInWheel = (-Math.PI / 2 - currentAngle) % (Math.PI * 2);
+        pointerInWheel = (pointerInWheel + Math.PI * 4) % (Math.PI * 2);
+        const idx = Math.floor(pointerInWheel / arc) % sliceCount;
+
+        document.getElementById("spinResult").textContent =
+          `오늘은 ${menus[idx]} !!`;
+        document.getElementById("spinBtn").style.display = "none";
+        document.getElementById("spinAgain").style.display = "block";
+        launchConfetti();
+      }
+
+      function resetSpin() {
+        document.getElementById("spinResult").textContent = "";
+        document.getElementById("spinBtn").style.display = "";
+        document.getElementById("spinBtn").disabled = false;
+        document.getElementById("spinAgain").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
